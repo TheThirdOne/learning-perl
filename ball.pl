@@ -5,24 +5,23 @@ sub search{
 	my $want = shift @_;
 	my @a = @_;
 	my $index = 0;
-	until($a[$index] eq $want or $index > $#a){
-		++$index;
-	}
+	++$index until $#a < $index or $a[$index] eq $want;
 	if($index > $#a){
 		return -1;
 	}
 	return $index;
 }
 #my ($a, $v, $h, $t) = (0,0,0,0); #  @ARGV;
+my ($a,$v,$h,$t) = (0,0,0,0);
 my $temp = &search("-a", @ARGV);
-my $a = $ARGV[$temp+1];
+$a = $ARGV[$temp+1] unless $temp == -1;
 $temp = &search("-v", @ARGV);
-my $v = $ARGV[$temp+1];
+$v = $ARGV[$temp+1] unless $temp == -1;
 $temp = &search("-h", @ARGV);
-my $h = $ARGV[$temp+1];
+$h = $ARGV[$temp+1] unless $temp == -1;
 $temp = &search("-t", @ARGV);
-my $t = $ARGV[$temp+1];
-
+$t = $ARGV[$temp+1] unless $temp == -1;
+print "T, V, H, A\n";
 for(my $i = 0; $i < $t; $i++){
 	print $i;
 	print ",";
