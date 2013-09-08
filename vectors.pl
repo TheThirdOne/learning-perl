@@ -2,14 +2,14 @@
 use strict;
 use warnings;
 
-sub vect_norm{
+sub vector_norm{
 	my $total = 0;
 	foreach my $comp (@_){
 		$total +=$comp*$comp;
 	}
 	return sqrt $total;
 }
-sub vect_multiply{
+sub multiply_scalar{
 	my $scalar = shift @_;
 	my @out;
 	for(my $i = 0; $i <= $#_; $i++){
@@ -17,7 +17,7 @@ sub vect_multiply{
 	}
 	return @out;
 }
-sub vect_add{
+sub add_scalar{
 	my $addition = shift @_;
 	my @out;
 	for(my $i = 0; $i <= $#_; $i++){
@@ -25,11 +25,26 @@ sub vect_add{
 	}
 	return @out;
 }
-sub acceleration{
-
+sub add_vector{
+	my $size = ($#_ + 1)/2;
+	my @out;
+	for(my $i = 0; $i < $size; $i++){
+		$out[$i]=$_[$i]+$_[$i + $size];
+	}
+	return @out;
+}
+sub gravity{
+	my $d = shift @_;
+	my $GM = shift @_; #Gravitational constant * mass of orbiting body
+	my @pos = @_; #vector to orbiting mass from orbited body
+	my @out;
+	@out = multiply_scalar(-$GM,@pos);
+	@out = multiply_scalar(1/vector_norm(@pos)**$d,@out);
+	return @out;
 }
 sub sympletic_euler{
 	my $dimensions = shift @_;
+	my $n = shift @_;
 	my @pos;
 	my @vel;
 	if ($#_ + 1 < $dimensions*2){return;}	
@@ -37,12 +52,23 @@ sub sympletic_euler{
 		$pos[$i]= $_[$i];
 		$vel[$i]= $_[$i+$dimensions];		
 	}
-
-	#will add logic here for the simulation 
-
-	my $hash = {"pos"=>\@pos, "vel"=>\@vel};#\ makes a reference to the arrays
+	my $outpos = [\@pos];
+	my $outvel = [\@vel];
+	my $h = 1;
+	for my $i (0 .. 10){
+		my $temppos = @$outpos[$i];
+		my $tempvel = @$outvel[$i];
+		my @temp = add_vector(@$temppos, multiply_scalar($h , @$tempvel)); 
+		@$outvel[$i +1] = \@vel;
+		print "@$temppos\n";
+		@$outpos[$i + 1] = \@temp 
+	}
+	my $hash = {"pos"=>$outpos, "vel"=>$outvel};#\ makes a reference to the arrays
 	return $hash;
 }
-print vect_add(1,1,5), "\n";
-my $pos = sympletic_euler(2, 1, 56, 3, 4)->{"pos"};
-print "$pos->[1]\n";
+print add_vector(1, 2,1,5), "\n";
+my $pos = sympletic_euler(2, 2, 1, 56, 1, 1)->{"pos"};
+print "@{@$pos[1]}[0]\n : ";
+my @grav = gravity(2,1,5);
+print $grav[0], "\n";
+
