@@ -39,6 +39,7 @@ sub gravity{
 	my @pos = @_; #vector to orbiting mass from orbited body
 	my @out;
 	@out = multiply_scalar(-$GM,@pos);
+	print "@out ,";
 	@out = multiply_scalar(1/vector_norm(@pos)**$d,@out);
 	return @out;
 }
@@ -58,10 +59,11 @@ sub sympletic_euler{
 	for my $i (0 .. 10){
 		my $temppos = @$outpos[$i];
 		my $tempvel = @$outvel[$i];
-		my @temp = add_vector(@$temppos, multiply_scalar($h , @$tempvel)); 
-		@$outvel[$i +1] = \@vel;
-		print "@$temppos\n";
-		@$outpos[$i + 1] = \@temp 
+		my @tempp = add_vector(@$temppos, multiply_scalar($h , @$tempvel)); 
+		my @tempv = add_vector(@$tempvel, multiply_scalar($h , gravity($n, 5, @$temppos))); 
+ 		@$outvel[$i +1] = \@tempv;
+		@$outpos[$i + 1] = \@tempp; 
+		print "@$temppos , @$tempvel\n";
 	}
 	my $hash = {"pos"=>$outpos, "vel"=>$outvel};#\ makes a reference to the arrays
 	return $hash;
@@ -69,6 +71,6 @@ sub sympletic_euler{
 print add_vector(1, 2,1,5), "\n";
 my $pos = sympletic_euler(2, 2, 1, 56, 1, 1)->{"pos"};
 print "@{@$pos[1]}[0]\n : ";
-my @grav = gravity(2,1,5);
-print $grav[0], "\n";
-
+my @grav = gravity(2,1,2,7);
+print "@grav", "\n";
+print multiply_scalar(3,4,5);
