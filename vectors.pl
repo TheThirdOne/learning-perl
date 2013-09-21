@@ -39,7 +39,6 @@ sub gravity{
 	my @pos = @_; #vector to orbiting mass from orbited body
 	my @out;
 	@out = multiply_scalar(-$GM,@pos);
-	print "@out ,";
 	@out = multiply_scalar(1/vector_norm(@pos)**$d,@out);
 	return @out;
 }
@@ -56,7 +55,7 @@ sub sympletic_euler{
 	my $outpos = [\@pos];
 	my $outvel = [\@vel];
 	my $h = 1;
-	for my $i (0 .. 10){
+	for my $i (0 .. 50){
 		my $temppos = @$outpos[$i];
 		my $tempvel = @$outvel[$i];
 		my @tempp = add_vector(@$temppos, multiply_scalar($h , @$tempvel)); 
