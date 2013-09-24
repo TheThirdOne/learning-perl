@@ -7,9 +7,10 @@ open FILE, $filename or die "File doesn't work";
 my $hash = {};
 my @lines;
 while(my $line = <FILE>){
-	$line =~ s/[\.;,!?"-]//g;
+	$line =~ s/[\.;,!?"-'\[]//g;
 	@lines = split(/\s/,$line);
 	foreach (@lines){
+		$_ =~ tr/A-Z/a-z/;
 		if(defined $hash->{$_}){
 			$hash->{$_}+=1;
 		}else{
@@ -19,7 +20,9 @@ while(my $line = <FILE>){
 	}
 #	print @lines;	
 }
-for (sort {($hash->{$a} cmp $hash->{$b}) || ($a cmp $b)} keys %{$hash}){
-	print $_, ",",$hash->{$_},"\n";
+for(sort {$a cmp $b} keys %{$hash}){
+	if($hash->{$_} > 1){
+		print $_,",",$hash->{$_},"\n";	
+	}
 }
-print "I = ", $hash->{"I"};
+#print "I = ", $hash->{"I"};
